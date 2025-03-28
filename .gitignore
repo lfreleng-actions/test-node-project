@@ -1,6 +1,9 @@
 # SPDX-License-Identifier: Apache-2.0
 # SPDX-FileCopyrightText: 2025 The Linux Foundation
 
+# Node.js package/lock files
+package-lock.json
+
 # Temporary and binary files
 *~
 *.py[cod]
