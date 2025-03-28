@@ -16,9 +16,9 @@ on:
 permissions: {}
 
 jobs:
-  ### Test the GitHub Action in this Repository ###
+  ### Test the project in this repository ###
   tests:
-    name: "Test local GitHub Action"
+    name: "Build/test example project code"
     runs-on: ubuntu-24.04
     permissions:
       contents: read
@@ -26,20 +26,11 @@ jobs:
       - name: "Checkout repository"
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
-      # Perform setup prior to running test(s)
-      - name: "Testing setup step"
+      - name: "Build/test node example project 🛠️"
         shell: bash
         run: |
-          # Testing setup step
-          echo "Testing setup step"
-          echo "Testing setup step/summary output" >> "$GITHUB_STEP_SUMMARY"
-
-      - name: "Running local action: ${{ github.repository }}"
-        uses: ./
-
-      - name: "Validating local action: ${{ github.repository }}"
-        shell: bash
-        run: |
-          # Local action validation
-          echo "Validating local action: ${{ github.repository }}"
-          echo "Validation step summary output" >> "$GITHUB_STEP_SUMMARY"
+          # Build/test node example project
+          echo "Building/testing example project"
+          node -v
+          npm install
+          npm test
