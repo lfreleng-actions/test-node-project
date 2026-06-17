@@ -11,10 +11,12 @@
   "author": "Matthew Watkins",
   "license": "Apache-2.0",
   "dependencies": {
-    "express": "latest",
-    "http": "latest"
+    "express": "^5.2.1"
   },
   "devDependencies": {
-    "jest": "latest"
+    "jest": "^30.4.2"
+  },
+  "overrides": {
+    "js-yaml": "^4.2.0"
   }
 }
