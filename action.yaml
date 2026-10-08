@@ -1,0 +1,58 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2026 The Linux Foundation
+
+# Not a working action: this repository is a test fixture. The action
+# exists so callers can pin the fixture with a 'uses:' reference,
+# which Dependabot tracks and bumps, where a plain 'ref:' string is
+# invisible to it. It reports the commit and repository the caller
+# pinned, so the caller can check the fixture out at that commit.
+#
+# Pin by full commit SHA with a version comment, for example:
+#
+#   - id: fixture
+#     uses: lfreleng-actions/test-node-project@<sha>  # vX.Y.Z
+#
+# The github.action_* expression context is used, not the matching
+# GITHUB_ACTION_* environment variables: inside a composite action
+# the runner leaves those environment variables empty.
+name: 'test-node-project fixture ref'
+description: 'Report the commit a caller pinned this test fixture at'
+
+outputs:
+  ref:
+    description: 'Full commit SHA the caller pinned this fixture at'
+    value: ${{ steps.report.outputs.ref }}
+  repository:
+    description: 'Repository the fixture came from, as owner/name'
+    value: ${{ steps.report.outputs.repository }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 'Report pinned fixture commit'
+      id: report
+      shell: bash
+      env:
+        ACTION_REF: ${{ github.action_ref }}
+        ACTION_REPOSITORY: ${{ github.action_repository }}
+      run: |
+        # Report pinned fixture commit
+        set -euo pipefail
+        # A branch or tag pin would move under the caller, and an
+        # empty value reads as the default branch when checked out
+        if [[ ! "${ACTION_REF}" =~ ^[0-9a-f]{40}$ ]]; then
+          echo "::error::Pin this fixture by full commit SHA, not" \
+            "'${ACTION_REF}'"
+          exit 1
+        fi
+        if [[ ! "${ACTION_REPOSITORY}" =~ ^[A-Za-z0-9._-]+/[A-Za-z0-9._-]+$ ]]
+        then
+          echo "::error::Cannot determine the fixture repository"
+          exit 1
+        fi
+        {
+          echo "ref=${ACTION_REF}"
+          echo "repository=${ACTION_REPOSITORY}"
+        } >> "$GITHUB_OUTPUT"
+        echo "Fixture ${ACTION_REPOSITORY} pinned at ${ACTION_REF}"

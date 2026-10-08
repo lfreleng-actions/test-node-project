@@ -34,5 +34,20 @@ git clone git@github.com:lfreleng-actions/test-node-project.git
 4. npm start
 ```
 
+## Pinning this fixture
+
+`action.yaml` is not a working action. It lets a repository that
+tests against this fixture pin it with a `uses:` reference, which
+Dependabot tracks and bumps on each release:
+
+```yaml
+- id: fixture
+  uses: lfreleng-actions/test-node-project@<commit-sha>  # vX.Y.Z
+```
+
+The step outputs `ref`, the pinned commit, and `repository`, the
+repository it came from, ready to pass to a checkout. It fails unless
+pinned by full commit SHA.
+
 [pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/lfreleng-actions/test-node-project/main
 [pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/lfreleng-actions/test-node-project/main.svg
