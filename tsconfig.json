@@ -9,5 +9,5 @@
     "types": []
   },
   "include": ["**/*.ts"],
-  "exclude": ["node_modules", "variants"]
+  "exclude": ["node_modules", "variants", "coverage", "reports"]
 }
