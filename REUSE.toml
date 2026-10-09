@@ -13,3 +13,15 @@ path = [
 ]
 SPDX-License-Identifier = "Apache-2.0"
 SPDX-FileCopyrightText = "2025 The Linux Foundation"
+
+# Package-manager variants: JSON manifests allow no comments, and the
+# lockfiles are generated, so neither can carry an inline header
+[[annotations]]
+path = [
+     "variants/**/package.json",
+     "variants/**/bun.lock",
+     "variants/**/pnpm-lock.yaml",
+     "variants/**/yarn.lock"
+]
+SPDX-License-Identifier = "Apache-2.0"
+SPDX-FileCopyrightText = "2026 The Linux Foundation"
