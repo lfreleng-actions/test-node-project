@@ -53,6 +53,23 @@ Those hooks use the tools installed in `node_modules`, so run `npm ci`
 before `prek run --all-files`. pre-commit.ci cannot install them, and
 skips them.
 
+## Test reports
+
+`npm test` runs Jest with its defaults. `npm run test:ci` runs the
+same tests for CI callers and also writes reports to fixed paths:
+
+| Path                             | Format                     |
+| -------------------------------- | -------------------------- |
+| `reports/junit.xml`              | JUnit XML, by `jest-junit` |
+| `coverage/lcov.info`             | LCOV                       |
+| `coverage/coverage-summary.json` | Istanbul JSON summary      |
+
+The `jest-junit` key in `package.json` sets the JUnit path, and the
+`jest` key scopes coverage to this project's JavaScript sources,
+excluding `variants/`, configuration files and the report directories.
+Git, `npm pack`, ESLint, Prettier and tsc all ignore `coverage/` and
+`reports/`.
+
 ## Pinning this fixture
 
 `action.yaml` is not a working action. It lets a repository that
