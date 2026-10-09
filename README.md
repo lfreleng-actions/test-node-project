@@ -34,6 +34,25 @@ git clone git@github.com:lfreleng-actions/test-node-project.git
 4. npm start
 ```
 
+## Linting
+
+The project carries ESLint, Prettier and TypeScript configuration, and
+a script for each check. None of them rewrites files:
+
+```console
+npm ci
+npm run lint          # ESLint, eslint.config.mjs from actions-template
+npm run format:check  # Prettier
+npm run typecheck     # tsc --noEmit, checking greeting.ts
+```
+
+The colons in `format:check` are deliberate: they exercise callers
+that pass script names through to `npm run`. The same three checks run
+as `eslint`, `prettier` and `tsc` hooks in `.pre-commit-config.yaml`.
+Those hooks use the tools installed in `node_modules`, so run `npm ci`
+before `prek run --all-files`. pre-commit.ci cannot install them, and
+skips them.
+
 ## Pinning this fixture
 
 `action.yaml` is not a working action. It lets a repository that
