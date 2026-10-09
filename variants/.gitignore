@@ -1,0 +1,7 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2026 The Linux Foundation
+
+# Install and build output from each variant's own package manager
+node_modules/
+dist/
+.yarn/

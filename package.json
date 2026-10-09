@@ -10,6 +10,15 @@
   },
   "author": "Matthew Watkins",
   "license": "Apache-2.0",
+  "jest": {
+    "modulePathIgnorePatterns": [
+      "<rootDir>/variants/"
+    ],
+    "testPathIgnorePatterns": [
+      "/node_modules/",
+      "<rootDir>/variants/"
+    ]
+  },
   "dependencies": {
     "express": "^5.2.1"
   },

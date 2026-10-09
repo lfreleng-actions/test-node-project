@@ -25,6 +25,94 @@ concurrency:
 permissions: {}
 
 jobs:
+  ### Install, build and test each package-manager variant ###
+  variants:
+    name: "Variant: ${{ matrix.variant }}"
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        # 'version' is the tool version that generated the lockfile
+        # (see README.md). It is empty where the variant declares
+        # packageManager, which corepack then reads instead.
+        include:
+          - variant: 'yarn-classic'
+            pm: 'yarn'
+            version: '1.22.22'
+            frozen: '--frozen-lockfile'
+          - variant: 'yarn-berry'
+            pm: 'yarn'
+            version: ''
+            frozen: '--immutable'
+          - variant: 'pnpm'
+            pm: 'pnpm'
+            version: ''
+            frozen: '--frozen-lockfile'
+          - variant: 'pnpm-workspace'
+            pm: 'pnpm'
+            version: '10.34.6'
+            frozen: '--frozen-lockfile'
+          - variant: 'bun'
+            pm: 'bun'
+            version: '1.4.2'
+            frozen: '--frozen-lockfile'
+    steps:
+      - name: "Checkout repository"
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      # Node.js 22 bundles corepack, which supplies Yarn and pnpm;
+      # releases from 25 onwards no longer do
+      - name: "Set up Node.js"
+        # yamllint disable-line rule:line-length
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: "Set up Bun"
+        if: matrix.pm == 'bun'
+        # yamllint disable-line rule:line-length
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: ${{ matrix.version }}
+
+      - name: "Install, build and test variant 🧩"
+        shell: bash
+        env:
+          VARIANT: ${{ matrix.variant }}
+          PM: ${{ matrix.pm }}
+          PM_VERSION: ${{ matrix.version }}
+          FROZEN: ${{ matrix.frozen }}
+          COREPACK_ENABLE_DOWNLOAD_PROMPT: '0'
+          # Variants without packageManager must stay without it
+          COREPACK_ENABLE_AUTO_PIN: '0'
+        run: |
+          # Install, build and test variant
+          set -euo pipefail
+          node -v
+          if [ "${PM}" != "bun" ]; then
+            # Put the yarn and pnpm shims on PATH, as a caller's setup
+            # would: scripts such as 'pnpm -r run build' call them by
+            # name. Without packageManager, corepack falls back to its
+            # global default version.
+            corepack enable
+            if [ -n "${PM_VERSION}" ]; then
+              corepack install --global "${PM}@${PM_VERSION}"
+            fi
+          fi
+          cd "variants/${VARIANT}"
+          "${PM}" --version
+          "${PM}" install "${FROZEN}"
+          "${PM}" run build
+          "${PM}" run test
+          # A frozen install must leave the committed files untouched
+          git diff --exit-code -- .
+
   ### Test the project in this repository ###
   tests:
     name: "Build/test example project code"
