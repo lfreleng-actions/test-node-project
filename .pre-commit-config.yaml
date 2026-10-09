@@ -4,8 +4,11 @@
 
 ci:
   autofix_prs: false
-  # pre-commit.ci sandbox prevents network calls; disable gha-workflow-linter
-  skip: [gha-workflow-linter]
+  # pre-commit.ci sandbox prevents network calls; disable gha-workflow-linter.
+  # The eslint, prettier and tsc hooks run the project's own tools from
+  # node_modules, which the sandbox never installs, so they are skipped
+  # there too and run locally after 'npm ci'.
+  skip: [gha-workflow-linter, eslint, prettier, tsc]
   autofix_commit_msg: |
     Chore: pre-commit autofixes
 
@@ -111,6 +114,10 @@ repos:
     rev: b23b60e5884e985320a030e6114032152e2373cd  # frozen: v1.7.1
     hooks:
       - id: gha-workflow-linter
+        # Installed packages ship their own workflows, which are neither
+        # ours to lint nor to rewrite; the eslint, prettier and tsc
+        # hooks below need node_modules present.
+        args: [lint, ., --exclude, node_modules]
 
   - repo: https://github.com/python-jsonschema/check-jsonschema
     rev: 4f85d46a92dc17713078e5de73f8a13190edf6fc  # frozen: 0.38.2
@@ -126,3 +133,53 @@ repos:
         types:
           - yaml
       - id: check-readthedocs
+
+  # JavaScript/TypeScript linting, formatting and type checking.
+  #
+  # Local language: system hooks running the project's own tools, so
+  # versions are declared once, in package.json, and ESLint's flat
+  # config can resolve its plugins. They need node_modules ('npm ci'),
+  # which the pre-commit.ci sandbox lacks, hence the ci.skip entries.
+  # All three only check: none rewrites files, matching the
+  # 'npm run lint', 'npm run format:check' and 'npm run typecheck'
+  # scripts that CI callers run. They are bound to the pre-commit
+  # stage, as this file sets no default_stages and the commit-msg
+  # stage would otherwise hand Prettier the commit message file.
+  #
+  # The eslint hook is actions-template's, minus --fix. It runs
+  # repository-wide with always_run, so a commit deleting sources still
+  # triggers it, and .github/hooks/manifest-guard.sh (also copied from
+  # actions-template) decides what it lints: sources owned by the root
+  # package.json, excluding those beneath a nested package.json. The
+  # entry refuses ESLint older than 9, forces flat config, and pins
+  # this repository's eslint.config.mjs with --no-config-lookup so
+  # discovery cannot walk up into a config outside the checkout.
+  - repo: local
+    hooks:
+      - id: eslint
+        name: eslint
+        # yamllint disable-line rule:line-length
+        entry: bash -c 'export GUARD_EXCLUDE="(^|/)(dist|build|coverage|node_modules)/|(^|/)eslint[.]config[.](m|c)?js$"; sh .github/hooks/manifest-guard.sh package.json "*.js" "*.jsx" "*.mjs" "*.cjs" "*.ts" "*.tsx" "*.mts" "*.cts"; rc=$?; case "$rc" in 3|4) ;; *) exit "$rc";; esac; v=$(npx --no-install eslint --version 2>/dev/null | sed "s/^v//; s/[.].*$//"); if [ -z "$v" ]; then echo "eslint not installed - add eslint >=9 to devDependencies" >&2; exit 1; fi; if [ "$v" -lt 9 ]; then echo "eslint $v cannot load a flat config reliably - upgrade to >=9" >&2; exit 1; fi; if ! git ls-files -- eslint.config.mjs | grep -q .; then echo "eslint.config.mjs is not tracked - copy it from actions-template, or ESLint would lint against a config outside this repository" >&2; exit 1; fi; { sh .github/hooks/manifest-guard.sh --list package.json "*.js" "*.jsx" "*.mjs" "*.cjs" "*.ts" "*.tsx" "*.mts" "*.cts"; printf "eslint.config.mjs\0"; } | xargs -0 env ESLINT_USE_FLAT_CONFIG=true npx --no-install eslint --no-config-lookup --config eslint.config.mjs'
+        language: system
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false
+
+      # --ignore-unknown skips files Prettier has no parser for, and
+      # .prettierignore applies to the files passed in, so this checks
+      # exactly what 'npm run format:check' does.
+      - id: prettier
+        name: prettier
+        entry: npx --no-install prettier --check --ignore-unknown
+        language: system
+        stages: [pre-commit]
+        types: [text]
+
+      # Whole-project: tsc ignores tsconfig.json when handed file names.
+      - id: tsc
+        name: tsc
+        entry: npx --no-install tsc --noEmit -p tsconfig.json
+        language: system
+        stages: [pre-commit]
+        always_run: true
+        pass_filenames: false
