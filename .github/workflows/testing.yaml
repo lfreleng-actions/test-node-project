@@ -17,6 +17,10 @@ on:
       - '!.github/**'
       - '!.*'
       - '!tox.ini'
+      # Root dotfiles that change the outcome of the format check
+      - '.editorconfig'
+      - '.prettierignore'
+      - '.prettierrc.yaml'
 
 concurrency:
   group: "${{ github.workflow }}-${{ github.ref }}"
@@ -46,3 +50,24 @@ jobs:
           node -v
           npm install
           npm test
+
+      - name: "Lint, format check and type check 🔍"
+        shell: bash
+        run: |
+          # Lint, format check and type check
+          npm run lint
+          npm run format:check
+          npm run typecheck
+
+      - name: "Write JUnit and coverage reports 📊"
+        shell: bash
+        run: |
+          # Write JUnit and coverage reports
+          npm run test:ci
+          for report in reports/junit.xml coverage/lcov.info \
+            coverage/coverage-summary.json; do
+            if [ ! -s "$report" ]; then
+              echo "Error: test:ci did not write $report ❌"
+              exit 1
+            fi
+          done

@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node app.js",
     "test": "jest",
-    "build": "echo 'Hello build!'"
+    "test:ci": "jest --ci --coverage --coverageReporters=lcov --coverageReporters=json-summary --reporters=default --reporters=jest-junit",
+    "build": "echo 'Hello build!'",
+    "lint": "eslint .",
+    "format:check": "prettier --check .",
+    "typecheck": "tsc --noEmit"
   },
   "author": "Matthew Watkins",
   "license": "Apache-2.0",
@@ -14,7 +18,33 @@
     "express": "^5.2.1"
   },
   "devDependencies": {
-    "jest": "^30.5.2"
+    "@eslint/js": "^10.0.1",
+    "eslint": "^10.12.0",
+    "globals": "^17.13.0",
+    "jest": "^30.5.2",
+    "jest-junit": "^17.0.0",
+    "prettier": "^3.9.9",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.71.1"
+  },
+  "jest": {
+    "collectCoverageFrom": [
+      "**/*.js",
+      "!**/node_modules/**",
+      "!coverage/**",
+      "!reports/**",
+      "!variants/**",
+      "!**/*.config.{js,cjs,mjs}"
+    ],
+    "coverageDirectory": "coverage"
+  },
+  "jest-junit": {
+    "outputDirectory": "reports",
+    "outputName": "junit.xml",
+    "suiteNameTemplate": "{filepath}",
+    "classNameTemplate": "{filepath}",
+    "titleTemplate": "{title}",
+    "addFileAttribute": "true"
   },
   "overrides": {
     "js-yaml": "^4.3.2"
