@@ -1,0 +1,7 @@
+---
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2026 The Linux Foundation
+
+# Indentation comes from .editorconfig, which Prettier reads. Single
+# quotes match eslint.config.mjs, copied from actions-template.
+singleQuote: true

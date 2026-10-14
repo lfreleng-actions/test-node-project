@@ -5,6 +5,12 @@ version = 1
 
 # Licensing statement required for linting to pass for this repository
 
+# JSON allows no comments, so this cannot carry an inline header
+[[annotations]]
+path = "tsconfig.json"
+SPDX-License-Identifier = "Apache-2.0"
+SPDX-FileCopyrightText = "2026 The Linux Foundation"
+
 [[annotations]]
 path = [
      "app/**",
