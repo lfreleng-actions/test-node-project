@@ -28,3 +28,30 @@ updates:
     cooldown:
       default-days: 7
     open-pull-requests-limit: 15
+
+  # Package-manager variants, which callers select with path_prefix.
+  # The npm ecosystem reads Yarn and pnpm lockfiles too; Bun has its
+  # own. Kept current so their audits and Grype scans stay clean.
+  - package-ecosystem: "npm"
+    directories:
+      - "/variants/yarn-classic"
+      - "/variants/yarn-berry"
+      - "/variants/pnpm"
+      - "/variants/pnpm-workspace"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "Build(deps)"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 15
+
+  - package-ecosystem: "bun"
+    directory: "/variants/bun"
+    schedule:
+      interval: "weekly"
+    commit-message:
+      prefix: "Build(deps)"
+    cooldown:
+      default-days: 7
+    open-pull-requests-limit: 15
