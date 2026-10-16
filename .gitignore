@@ -41,6 +41,10 @@ junit*.xml
 coverage.xml
 .pytest_cache/
 
+# Written by npm run test:ci
+coverage/
+reports/
+
 # Build and docs folder/files
 build/*
 dist/*
