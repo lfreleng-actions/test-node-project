@@ -85,6 +85,34 @@ The step outputs `ref`, the pinned commit, and `repository`, the
 repository it came from, ready to pass to a checkout. It fails unless
 pinned by full commit SHA.
 
+## Merge-lane release cases
+
+`version.properties` gives `merge.yaml` in
+`lfreleng-actions/node-workflows` a version to resolve, `1.0.0`, matching
+`package.json`. Its release detection compares a commit with its first
+parent and counts the files the commit adds under `releases/`. Five
+consecutive commits exercise that logic, and each touches nothing
+beyond the files its case needs:
+
+<!-- markdownlint-disable MD013 -->
+
+| Commit subject                                     | Expected result                                    |
+| -------------------------------------------------- | -------------------------------------------------- |
+| `Feat: Add version.properties at 1.0.0`            | No release: snapshot candidate                     |
+| `Test: Add matching release file for 1.0.0`        | Release `1.0.0`, version verified                  |
+| `Test: Change a comment in the 1.0.0 release file` | No release: an edit adds no file                   |
+| `Test: Add mismatched release file for 1.0.1`      | Fails: `1.0.1` does not match `version.properties` |
+| `Test: Remove the release fixture files`           | No release: a deletion adds no file                |
+
+<!-- markdownlint-enable MD013 -->
+
+Callers pin each case by its commit SHA after merge and check it out at
+depth 2. Merge the pull request that adds them with a merge commit: a
+squash or rebase merge would discard the commits or change their SHAs.
+The last commit removes both release files, so the merge commit itself
+adds nothing under `releases/` and the tip of `main` stays a snapshot
+candidate.
+
 ## Package-manager variants
 
 The root project covers npm. Each directory under `variants/` is a
