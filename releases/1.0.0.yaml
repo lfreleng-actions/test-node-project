@@ -3,3 +3,5 @@
 # SPDX-FileCopyrightText: 2026 The Linux Foundation
 
 version: 1.0.0
+
+# Edited after the release file landed; the version line is unchanged
