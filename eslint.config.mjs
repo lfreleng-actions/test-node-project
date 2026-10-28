@@ -147,14 +147,4 @@ export default tseslint.config(
       '@typescript-eslint/no-require-imports': 'off',
     },
   },
-
-  {
-    // Jest injects test, expect and the other test globals at run time.
-    files: ['**/*.test.js'],
-    languageOptions: {
-      globals: {
-        ...globals.jest,
-      },
-    },
-  },
 );

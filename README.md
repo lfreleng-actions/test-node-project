@@ -55,20 +55,28 @@ skips them.
 
 ## Test reports
 
-`npm test` runs Jest with its defaults. `npm run test:ci` runs the
-same tests for CI callers and also writes reports to fixed paths:
+`npm test` runs the root test files with the Node.js test runner
+(`node --test`), as the variants do, so the project needs no test
+framework. `npm run test:ci` runs the same tests for CI callers and
+also writes reports to fixed paths:
 
-| Path                             | Format                     |
-| -------------------------------- | -------------------------- |
-| `reports/junit.xml`              | JUnit XML, by `jest-junit` |
-| `coverage/lcov.info`             | LCOV                       |
-| `coverage/coverage-summary.json` | Istanbul JSON summary      |
+<!-- markdownlint-disable MD013 -->
 
-The `jest-junit` key in `package.json` sets the JUnit path, and the
-`jest` key scopes coverage to this project's JavaScript sources,
-excluding `variants/`, configuration files and the report directories.
-Git, `npm pack`, ESLint, Prettier and tsc all ignore `coverage/` and
-`reports/`.
+| Path                             | Format                                     |
+| -------------------------------- | ------------------------------------------ |
+| `reports/junit.xml`              | JUnit XML, by the Node.js `junit` reporter |
+| `coverage/lcov.info`             | LCOV, by `c8`                              |
+| `coverage/coverage-summary.json` | Istanbul JSON summary, by `c8`             |
+
+<!-- markdownlint-enable MD013 -->
+
+The Node.js JUnit reporter writes a top-level `test()` outside any
+`<testsuite>`, so tests sit inside a `describe()`. The `test:ci`
+script creates `reports/` first, because the reporter does not. The
+`c8` key in `package.json` scopes coverage to this project's
+JavaScript sources, excluding tests, `variants/`, configuration files
+and the report directories. Git, `npm pack`, ESLint, Prettier and tsc
+all ignore `coverage/` and `reports/`.
 
 ## Pinning this fixture
 
@@ -159,8 +167,8 @@ Node.js 25 and later no longer bundle corepack;
 `npm install --global corepack` provides it. CI runs each variant this
 way in `testing.yaml`, and Dependabot keeps their lockfiles current.
 
-The root project's Jest configuration and its npm package exclude
-`variants/`.
+The root project's test glob, its coverage configuration and its npm
+package exclude `variants/`.
 
 [pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/lfreleng-actions/test-node-project/main
 [pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/lfreleng-actions/test-node-project/main.svg
