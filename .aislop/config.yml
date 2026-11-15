@@ -1,0 +1,8 @@
+# SPDX-License-Identifier: Apache-2.0
+# SPDX-FileCopyrightText: 2026 The Linux Foundation
+
+# This repository is a fixture: other actions build, test, lint and
+# audit it, and many of its files exist only for them to find. Knip
+# would report those files as unused, so its unused-code check is off.
+quality:
+  knip: off
