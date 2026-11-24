@@ -7,7 +7,7 @@ SPDX-FileCopyrightText: 2025 The Linux Foundation
 
 <!-- prettier-ignore-start -->
 <!-- markdownlint-disable-next-line MD013 -->
-[![Linux Foundation](https://img.shields.io/badge/Linux-Foundation-blue)](https://linuxfoundation.org//) [![Source Code](https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white&color=blue)](https://github.com/lfreleng-actions/test-node-project) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0) [![pre-commit.ci status badge]][pre-commit.ci results page]
+[![Linux Foundation](https://img.shields.io/badge/Linux-Foundation-blue)](https://linuxfoundation.org//) [![Source Code](https://img.shields.io/badge/GitHub-100000?logo=github&logoColor=white&color=blue)](https://github.com/lfreleng-actions/test-node-project) [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 <!-- prettier-ignore-end -->
 
 Example project used for testing Github actions that work with Node.js code.
@@ -169,6 +169,3 @@ way in `testing.yaml`, and Dependabot keeps their lockfiles current.
 
 The root project's test glob, its coverage configuration and its npm
 package exclude `variants/`.
-
-[pre-commit.ci results page]: https://results.pre-commit.ci/latest/github/lfreleng-actions/test-node-project/main
-[pre-commit.ci status badge]: https://results.pre-commit.ci/badge/github/lfreleng-actions/test-node-project/main.svg
